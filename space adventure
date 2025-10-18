@@ -1,0 +1,156 @@
+import React, { useState } from "react";
+import { motion } from "framer-motion";
+
+// Define 5 stages with questions for the game
+const stages = [
+  {
+    name: "The Moon Mission",
+    questions: [
+      {
+        question: "What is the closest celestial body to Earth?",
+        options: ["Sun", "Moon", "Mars", "Venus"],
+        answer: "Moon",
+        fact: "The Moon is Earth's only natural satellite and the closest celestial body."
+      },
+      {
+        question: "How long does it take the Moon to orbit the Earth?",
+        options: ["24 hours", "7 days", "27.3 days", "365 days"],
+        answer: "27.3 days",
+        fact: "The Moon takes about 27.3 days to complete one orbit around Earth."
+      }
+    ]
+  },
+  {
+    name: "Mars Exploration",
+    questions: [
+      {
+        question: "Which planet is known as the Red Planet?",
+        options: ["Mars", "Jupiter", "Saturn", "Venus"],
+        answer: "Mars",
+        fact: "Mars is often called the Red Planet due to its reddish appearance."
+      },
+      {
+        question: "Which rover landed on Mars in 2021?",
+        options: ["Curiosity", "Perseverance", "Opportunity", "Spirit"],
+        answer: "Perseverance",
+        fact: "NASA's Perseverance rover landed on Mars in February 2021."
+      }
+    ]
+  },
+  {
+    name: "Jupiter Journey",
+    questions: [
+      {
+        question: "Which planet has the largest number of moons?",
+        options: ["Jupiter", "Saturn", "Earth", "Mars"],
+        answer: "Jupiter",
+        fact: "Jupiter has 79 known moons, more than any other planet in our Solar System."
+      }
+    ]
+  },
+  {
+    name: "Saturn Rings",
+    questions: [
+      {
+        question: "What is Saturn most famous for?",
+        options: ["Its rings", "Its size", "Its moons", "Its storms"],
+        answer: "Its rings",
+        fact: "Saturn is well known for its extensive ring system made of ice and rock."
+      }
+    ]
+  },
+  {
+    name: "The Outer Space Frontier",
+    questions: [
+      {
+        question: "Which spacecraft was the first to leave the Solar System?",
+        options: ["Voyager 1", "Pioneer 10", "Apollo 11", "Hubble"],
+        answer: "Voyager 1",
+        fact: "Voyager 1 is the first human-made spacecraft to reach interstellar space."
+      },
+      {
+        question: "Which planet is known for its Great Red Spot?",
+        options: ["Mars", "Jupiter", "Saturn", "Neptune"],
+        answer: "Jupiter",
+        fact: "The Great Red Spot is a massive storm on Jupiter lasting hundreds of years."
+      }
+    ]
+  }
+];
+
+export default function SpaceAdventureGame() {
+  const [currentStage, setCurrentStage] = useState(0);
+  const [currentQuestion, setCurrentQuestion] = useState(0);
+  const [score, setScore] = useState(0);
+  const [showFact, setShowFact] = useState(false);
+  const [gameOver, setGameOver] = useState(false);
+
+  // Safely access stage and question
+  const stage = stages[currentStage] || { name: "Unknown Stage", questions: [] };
+  const currentQ = stage.questions[currentQuestion] || { question: "No question", options: [], answer: "", fact: "" };
+
+  const handleAnswer = (option) => {
+    if (showFact) return;
+    if (option === currentQ.answer) setScore(prev => prev + 1);
+    setShowFact(true);
+
+    setTimeout(() => {
+      setShowFact(false);
+      if (currentQuestion + 1 < stage.questions.length) {
+        setCurrentQuestion(prev => prev + 1);
+      } else if (currentStage + 1 < stages.length) {
+        setCurrentStage(prev => prev + 1);
+        setCurrentQuestion(0);
+      } else {
+        setGameOver(true);
+      }
+    }, 2000);
+  };
+
+  const restartGame = () => {
+    setCurrentStage(0);
+    setCurrentQuestion(0);
+    setScore(0);
+    setShowFact(false);
+    setGameOver(false);
+  };
+
+  return (
+    <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-b from-indigo-800 to-black text-white p-6">
+      <motion.h1
+        className="text-4xl font-bold mb-6 flex items-center gap-2"
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+      >
+        🚀 Space Adventure Quiz!
+      </motion.h1>
+
+      {gameOver ? (
+        <div className="bg-gray-900 text-center p-6 rounded-xl">
+          <h2 className="text-2xl mb-4">Mission Complete! 🚀</h2>
+          <p className="text-lg mb-4">Your Score: {score}</p>
+          <button onClick={restartGame} className="bg-yellow-400 text-black px-4 py-2 rounded-lg">Play Again</button>
+        </div>
+      ) : (
+        <div className="bg-gray-900 w-full max-w-lg text-center p-6 rounded-xl">
+          <h2 className="text-2xl mb-4 flex justify-center items-center gap-2">
+            🪐 {stage.name} - Question {currentQuestion + 1}
+          </h2>
+          <p className="text-lg mb-4">{currentQ.question}</p>
+          <div className="grid grid-cols-2 gap-3 mb-4">
+            {currentQ.options.map(option => (
+              <button 
+                key={option} 
+                onClick={() => handleAnswer(option)} 
+                className="bg-indigo-700 hover:bg-indigo-600 transition-colors rounded-lg py-2 px-4"
+              >
+                {option}
+              </button>
+            ))}
+          </div>
+          {showFact && <p className="mt-2 text-sm text-yellow-300">{currentQ.fact}</p>}
+        </div>
+      )}
+    </div>
+  );
+}
