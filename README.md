@@ -1,1 +1,1 @@
-to open game touch space adventure and then you touch copy raw file and paste it on your google or safary enjoy educational game
+to play the game go to the script and touch download raw file and open in folder will apear this game is help by chat gpt
